@@ -7,8 +7,7 @@ from examples._session import use_local_token
 from wrs_agent import System
 
 CONFIG = Path(__file__).with_name("bindings.toml")
-SCENE = Path(__file__).with_name("scene.toml")
-
+SCENE = Path(__file__).with_name("cooking_scene.toml")
 
 async def main():
     async with System.launch(
