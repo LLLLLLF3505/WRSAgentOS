@@ -5,9 +5,11 @@ from pathlib import Path
 
 from examples._session import use_local_token
 from wrs_agent import System
+from wrs_agent.env.wrs import ROOT
 
 CONFIG = Path(__file__).with_name("bindings.toml")
-SCENE = Path(__file__).with_name("cooking_scene.toml")
+
+SCENE = ROOT / "wrs_agent/assets/kitchen/scene.toml"
 
 async def main():
     async with System.launch(

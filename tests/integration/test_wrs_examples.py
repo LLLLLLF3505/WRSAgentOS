@@ -54,16 +54,14 @@ async def test_persistent_wrs_control_and_viewer_do_not_own_remote_execution(mon
         async with System.connect(
             f"tcp/127.0.0.1:{node_port}", env_id=env_id, bindings=tmp_path / "bindings.toml"
         ) as observer:
-
             # Agent initialization no longer implies WRS initialization has finished.
             # HELD is initialized too: recovery must remain an explicit client action.
             async def ready():
                 try:
                     nodes = await observer.nodes()
-                    return (
-                        nodes.get("agent", {}).get("ready")
-                        and nodes.get("wrs", {}).get("health") in {"ready", "held"}
-                    )
+                    return nodes.get("agent", {}).get("ready") and nodes.get("wrs", {}).get(
+                        "health"
+                    ) in {"ready", "held"}
                 except TimeoutError:
                     return False
 
@@ -71,9 +69,18 @@ async def test_persistent_wrs_control_and_viewer_do_not_own_remote_execution(mon
             initial_scene = await observer.snapshot()
             boot = initial_scene.boot_id
             assert initial_scene.data.kind == "scene"
-            assert set(initial_scene.data.objects) == {"table", "A"}
-            assert initial_scene.data.objects["A"].source == "configuration"
-            assert initial_scene.data.objects["A"].pos == pytest.approx([0.35, 0.18, 0.02])
+            assert set(initial_scene.data.objects) == {
+                "table",
+                "pot",
+                "pot_lid",
+                "induction_cooker",
+                "measuring_cup",
+                "skimmer",
+                "plate",
+                "plate_block",
+            }
+            assert initial_scene.data.objects["plate"].source == "configuration"
+            assert initial_scene.data.objects["plate"].pos == pytest.approx([0.22, 0.20, 0.0])
             with viewer_log.open("w", encoding="utf-8") as log:
                 viewer = await asyncio.create_subprocess_exec(
                     *python_command(tmp_path / "07_viewer.py"),
@@ -128,10 +135,9 @@ async def test_persistent_wrs_control_and_viewer_do_not_own_remote_execution(mon
 
             async def ready_again():
                 nodes = await observer.nodes()
-                return (
-                    nodes.get("agent", {}).get("ready")
-                    and nodes.get("wrs", {}).get("health") in {"ready", "held"}
-                )
+                return nodes.get("agent", {}).get("ready") and nodes.get("wrs", {}).get(
+                    "health"
+                ) in {"ready", "held"}
 
             await eventually(ready_again, bool, timeout=15)
             before = await observer.snapshot()

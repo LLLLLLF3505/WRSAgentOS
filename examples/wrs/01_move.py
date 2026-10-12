@@ -1,4 +1,4 @@
-"""用真实 WRS UR7E 模型做虚拟 FK 运动，不连接硬件。"""
+"""用真实 WRS FAFU 模型做虚拟 FK 运动，不连接硬件。"""
 
 from wrs_agent import launch
 

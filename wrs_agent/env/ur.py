@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 
 from wrs_agent.env import ur_rtde
-from wrs_agent.env.wrs import ROBOT_SKILLS, UNSUPPORTED, advance_virtual, open_model
+from wrs_agent.env.wrs import ROBOT_SKILLS, UNSUPPORTED, URVirtualModel, advance_virtual, open_model
 from wrs_agent.errors import error_info
 from wrs_agent.executor import ActionExecutor, ExecutionUnknown, SkillFailure
 from wrs_agent.schemas import ModeReceipt, ModeRequest
@@ -41,7 +41,7 @@ async def make_ur_environment(
     connect = connect or partial(
         ur_rtde.connect, robot_ip, gripper_port, gripper_width=gripper_width, payload_kg=payload_kg
     )
-    call, model, state, close_model = await open_model(scene)
+    call, model, state, close_model = await open_model(scene, model_factory=URVirtualModel)
     loop = asyncio.get_running_loop()
     owner = ThreadPoolExecutor(max_workers=1, thread_name_prefix="ur-device")
 

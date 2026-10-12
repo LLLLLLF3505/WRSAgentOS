@@ -1,0 +1,73 @@
+# Default FAFU kitchen, metres. Mesh paths are relative to wrs_agent/assets.
+frame_id = "world"
+
+[objects.table]
+source = "configuration"
+label = "工作台"
+pos = [0.35, 0, -0.03]
+rotmat = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+rgb = [0.42, 0.28, 0.17]
+geometry = { kind = "box", xyz_lengths = [1.1, 1, 0.06] }
+
+[objects.induction_cooker]
+source = "configuration"
+label = "电磁炉"
+pos = [0.5199999809265137, 0.2199999988079071, 0.0]
+rotmat = [[1.0, -0.0, 0.0], [0.0, 1.0, -0.0], [0.0, 0.0, 1.0]]
+rgb = [0.78, 0.79, 0.8]
+alpha = 1.0
+geometry = { kind = "mesh", asset = "kitchen/meshes/induction_cooker.stl" }
+
+[objects.pot]
+source = "configuration"
+label = "锅"
+pos = [0.5199999809265137, 0.2199999988079071, 0.04500013589859009]
+rotmat = [[1.0, -0.0, 0.0], [0.0, 1.0, -0.0], [0.0, 0.0, 1.0]]
+rgb = [0.5, 0.55, 0.6]
+alpha = 1.0
+geometry = { kind = "mesh", asset = "kitchen/meshes/pot.stl" }
+
+[objects.pot_lid]
+source = "configuration"
+label = "锅盖"
+pos = [0.4000000059604645, -0.25, 0.0]
+rotmat = [[1.0, -0.0, 0.0], [0.0, 1.0, -0.0], [0.0, 0.0, 1.0]]
+rgb = [0.57, 0.62, 0.68]
+alpha = 1.0
+geometry = { kind = "mesh", asset = "kitchen/meshes/pot_lid.stl" }
+
+[objects.measuring_cup]
+source = "configuration"
+label = "量杯"
+pos = [0.6800000071525574, -0.23000000417232513, 0.0]
+rotmat = [[1.0, -0.0, 0.0], [0.0, 1.0, -0.0], [0.0, 0.0, 1.0]]
+rgb = [0.8, 0.81, 0.82]
+alpha = 0.28
+geometry = { kind = "mesh", asset = "kitchen/meshes/measuring_cup.stl" }
+
+[objects.skimmer]
+source = "configuration"
+label = "漏勺"
+pos = [0.15000000596046448, -0.25999999046325684, 0.0]
+rotmat = [[1.0, -0.0, 0.0], [0.0, 1.0, -0.0], [0.0, 0.0, 1.0]]
+rgb = [0.58, 0.63, 0.68]
+alpha = 1.0
+geometry = { kind = "mesh", asset = "kitchen/meshes/skimmer.stl" }
+
+[objects.plate]
+source = "configuration"
+label = "盘子"
+pos = [0.22, 0.2, 0]
+rotmat = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+rgb = [0.84, 0.85, 0.87]
+alpha = 1.0
+geometry = { kind = "mesh", asset = "kitchen/meshes/plate.stl" }
+
+[objects.plate_block]
+source = "configuration"
+label = "盘上长方体"
+pos = [0.22, 0.2, 0.022000088691711425]
+rotmat = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+rgb = [0.92, 0.92, 0.88]
+alpha = 1.0
+geometry = { kind = "mesh", asset = "kitchen/meshes/plate_block.stl" }

@@ -40,6 +40,7 @@ PAIRED = {
 }
 # Explicit audio/model or interactive examples; never run by the default verifier.
 LIVE = {
+    "wrs/15_imported_kitchen.py",
     "models/01_plan.py", "models/02_execute.py",
     "voice/05_start_wrs_voice.py", "voice/06_push_to_talk.py",
     "voice/07_start_llm_voice.py", "voice/08_listen_goals.py", "voice/09_viewer.py",

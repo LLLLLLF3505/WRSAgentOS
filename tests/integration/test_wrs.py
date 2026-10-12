@@ -51,7 +51,7 @@ async def test_real_wrs_progress_query_completion_and_unsupported():
         assert result.state is ActionState.SUCCEEDED and result.verification == "PASS"
         final = await node.snapshot()
         assert final.data.robot.pose == "B"
-        assert final.data.robot.kinematics.qs == pytest.approx([0.3, -1.2, 1.8, -2.2, -1.57, 0.0])
+        assert final.data.robot.kinematics.qs == pytest.approx([0.15, 1.45, 2.25, 0.1, 0.15, 0.0])
         events = []
         while (sample := subscriber.try_recv()) is not None:
             events.append(decode(sample.payload.to_bytes()))
@@ -142,29 +142,17 @@ async def test_unsupported_wrs_step_prevents_partial_tts_side_effect():
             assert (await client.transport.request("request/health", {}))["executions"] == 0
 
 
-async def test_gripper_open_close_is_read_back_and_cancellable():
-    async with LocalStack(backend="wrs", duration=0.4) as stack:
-        system = stack.system
-        before = (await system.snapshot()).data.robot
-        assert before.kinematics.gripper_width == pytest.approx(0.05)
-        closing = await system.action("set_gripper", command="close")
-        result = await closing.wait()
-        assert result.state == "SUCCEEDED" and result.verification == "PASS"
-        closed = (await system.snapshot()).data.robot
-        assert closed.kinematics.gripper_width == pytest.approx(0.0, abs=1e-6)
-        # Jaw motion leaves the arm, its named pose and any held object untouched.
-        assert closed.kinematics.qs == before.kinematics.qs
-        assert closed.pose == before.pose == "home" and closed.held_object is None
-
-        opening = await system.action("set_gripper", command="open")
-        await eventually(opening.status, lambda s: s.progress > 0)
-        assert (await opening.cancel()).accepted
-        assert (await opening.wait()).state == "CANCELLED"
-        await eventually(system.snapshot, lambda s: s.stop_confirmed)
-        stopped = (await system.snapshot()).data.robot.kinematics
-        assert 0.0 < stopped.gripper_width < 0.05
-        await asyncio.sleep(0.2)
-        assert (await system.snapshot()).data.robot.kinematics == stopped
+async def test_fafu_does_not_advertise_or_execute_unmodeled_gripper():
+    async with LocalStack(backend="wrs", duration=0.1) as stack:
+        node = stack.system.clients["wrs"]
+        before = await node.snapshot()
+        cap = await node.features()
+        assert before.data.robot.kinematics.gripper_width is None
+        assert "set_gripper" not in cap.skills and "set_gripper" in cap.unsupported
+        request = await request_for(node)
+        request = request.model_copy(update={"skill": "set_gripper", "args": {"command": "close"}})
+        assert not (await submit_request(node, request)).accepted
+        assert (await node.snapshot()).data == before.data
 
 
 async def test_relative_motion_uses_actual_ik_fk_and_stops_at_task_boundary():
@@ -186,13 +174,15 @@ async def test_relative_motion_uses_actual_ik_fk_and_stops_at_task_boundary():
                 for value, axis in zip(before, ("dx", "dy", "dz"), strict=True)
             ]
             assert snapshot.data.robot.kinematics.tcp_pos == pytest.approx(expected, abs=1e-4)
-            assert snapshot.data.robot.kinematics.tcp_name == "flange"
+            assert snapshot.data.robot.kinematics.tcp_name == "tool_link"
             for row, old_row in zip(
                 snapshot.data.robot.kinematics.tcp_rotmat, before_state.tcp_rotmat, strict=True
             ):
                 assert row == pytest.approx(old_row, abs=1e-4)
             assert snapshot.data.robot.pose is None
-        assert (await system.snapshot()).data.robot.kinematics.tcp_pos == pytest.approx(original)
+        assert (await system.snapshot()).data.robot.kinematics.tcp_pos == pytest.approx(
+            original, abs=2e-4
+        )
 
         moving = step("move_relative", dz=0.02)
         dependent = step("move_relative", dz=-0.02, after=moving)

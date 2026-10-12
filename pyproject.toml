@@ -27,6 +27,7 @@ dev = ["httpx>=0.28,<0.29", "pytest>=9,<10", "pytest-asyncio>=1,<2", "ruff>=0.15
 include = ["wrs_agent*"]
 
 [tool.setuptools.package-data]
+"wrs_agent" = ["assets/fafu/*.toml", "assets/fafu/urdf/*.urdf", "assets/fafu/meshes/*.STL", "assets/kitchen/*.toml", "assets/kitchen/meshes/*.stl", "assets/*.md"]
 "wrs_agent.nodes.asr" = ["assets.json"]
 "wrs_agent.nodes.tts" = ["assets.json"]
 "wrs_agent.skills" = ["README.md", "*/SKILL.md"]

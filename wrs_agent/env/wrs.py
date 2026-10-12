@@ -1,4 +1,4 @@
-"""Actual WRS UR7E + DH50 IK/FK, owned by one worker. No hardware connection."""
+"""WRS virtual models: default FAFU; explicit UR7e hardware mirror, each thread-owned."""
 
 import asyncio
 import site
@@ -42,9 +42,20 @@ def make_scene_object(wrs, object_id, data):
     """Construct only known, valid geometry; never invent an unknown pose."""
     if not data.valid or data.pos is None or data.rotmat is None or data.geometry is None:
         return None
+    if data.geometry.kind == "mesh":
+        from wrs.scene.scene_object import SceneObject
+
+        asset_root = (ROOT / "wrs_agent/assets").resolve()
+        path = (asset_root / data.geometry.asset).resolve()
+        if not path.is_relative_to(asset_root) or not path.is_file():
+            raise ValueError("mesh_asset_missing_or_outside_asset_root")
+        obj = SceneObject.from_file(str(path), rgb=data.rgb, alpha=data.alpha)
+        obj.name = object_id
+        obj.set_pos_rotmat(pos=data.pos, rotmat=data.rotmat)
+        return obj
     return wrs.wssop.box(
         pos=data.pos, rotmat=data.rotmat, xyz_lengths=data.geometry.xyz_lengths,
-        rgb=data.rgb, name=object_id,
+        rgb=data.rgb, alpha=data.alpha, name=object_id,
     )
 
 
@@ -65,7 +76,7 @@ def sync_scene_objects(wrs, scene, objects, displayed):
             displayed[name] = (data.model_copy(deep=True), obj)
 
 
-class VirtualModel:
+class URVirtualModel:
     """All methods, including construction, run on one owner thread."""
 
     def __init__(self):
@@ -196,6 +207,12 @@ class VirtualModel:
         )
 
 
+def VirtualModel():
+    from wrs_agent.env.fafu_backend import FafuModel
+
+    return FafuModel()
+
+
 class VirtualState:
     def __init__(self, kinematics, objects=None):
         self.version = 0
@@ -221,7 +238,7 @@ UNSUPPORTED = {
 }
 
 
-async def open_model(scene=None):
+async def open_model(scene=None, *, model_factory=None):
     """One WRS model on its own owner thread; returns (call, model, state, close)."""
     objects = await asyncio.to_thread(load_scene, scene) if scene is not None else {}
     owner = ThreadPoolExecutor(max_workers=1, thread_name_prefix="wrs-model")
@@ -232,10 +249,17 @@ async def open_model(scene=None):
         return await loop.run_in_executor(owner, fn, *args)
 
     try:
-        model = await call(VirtualModel)
+        model = await call(model_factory or VirtualModel)
+        if scene is None and getattr(model, "profile", None) == "fafu":
+            scene = ROOT / "wrs_agent/assets/kitchen/scene.toml"
+            objects = await asyncio.to_thread(load_scene, scene)
         if scene is not None:
             objects = await call(model.load_scene, objects)
         state = VirtualState(await call(model.read), objects)
+        if getattr(model, "profile", None) == "fafu":
+            state.facts.update(robot_model="fafu_baseV1", calibration="fafu-baseV1-tool-link-v1",
+                               robot_base_x=model.base_pos[0], robot_base_y=model.base_pos[1],
+                               robot_base_z=model.base_pos[2], physics_enabled=False)
     except BaseException:
         owner.shutdown(wait=False)
         raise
@@ -301,7 +325,7 @@ async def make_wrs_environment(journal_path, *, duration=0.4, scene=None, allow_
         close_backend=close,
         skills=[
             SKILLS[name].bind(partial(advance_virtual, call, model, duration, name))
-            for name in ROBOT_SKILLS
+            for name in ("observe", "move_named_pose", "move_relative")
         ],
         backend="wrs",
         features_extra={
@@ -310,6 +334,8 @@ async def make_wrs_environment(journal_path, *, duration=0.4, scene=None, allow_
             "controller_flush": False,
             "unsupported": {
                 **UNSUPPORTED,
+                "set_gripper": "FAFU gripper is not modeled; no jaw control or grasp physics.",
+                "pick": "FAFU gripper/contact physics are not implemented.",
                 "hardware": "Virtual profile; the ur_rtde backend drives the real UR7e.",
             },
         },
@@ -319,25 +345,14 @@ async def make_wrs_environment(journal_path, *, duration=0.4, scene=None, allow_
 def probe_virtual():
     from importlib.metadata import version
 
-    wrs = load_wrs()
-    robot, gripper = wrs.ur_ur7e.ur7e_with_gripper()
-    transforms = robot.fk()
+    model = VirtualModel()
     return {
         "import": "PASS",
-        "dependencies": {
-            name: version(name) for name in ("numpy", "scipy", "mujoco", "wgpu", "websockets")
-        },
-        "module": wrs.__file__,
-        "robot_class": type(robot).__name__,
-        "gripper_class": type(gripper).__name__,
-        "gripper_jaw_range": gripper.jaw_range.tolist(),
-        "fk_shape": list(transforms.shape),
-        "qs": robot.qs.tolist(),
-        "tcp_name": "flange",
-        "tcp_pos": robot.tcp("flange").pos.tolist(),
-        "tcp_rotmat": robot.tcp("flange").rotmat.tolist(),
-        "hardware": False,
-        "virtual_runtime_adapter": "wrs_ik_fk",
+        "dependencies": {name: version(name) for name in
+                         ("numpy", "scipy", "mujoco", "wgpu", "websockets")},
+        "module": model.wrs.__file__, "robot_class": type(model.robot).__name__,
+        "gripper_class": None, "hardware": False, "virtual_runtime_adapter": "fafu_ik_fk",
+        "fk_shape": list(model.robot.gl_lnk_tfarr.shape), **model.read(),
     }
 
 

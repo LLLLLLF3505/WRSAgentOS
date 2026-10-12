@@ -2,10 +2,10 @@
 
 import json
 
-from wrs_agent.env.wrs import POSES, VirtualModel
+from wrs_agent.env.wrs import POSES, URVirtualModel
 from wrs_agent.schemas import KinematicState
 
-model = VirtualModel()
+model = URVirtualModel()
 np = model.wrs.np
 model.robot.fk(np.asarray(POSES["B"]))
 # Give the named TCP a real tool offset and an orientation different from its link.
@@ -29,4 +29,11 @@ np.testing.assert_allclose(after.qs, model.robot.qs, atol=1e-6)
 # The joints can still match while the TCP target is invalid after a tool change.
 model.tcp.set_loc_rotmat_pos(rotmat=offset_rotmat, pos=np.array([0.0, 0.0, 0.10]))
 assert not model.verify()
+# The hardware mirror retains the UR-specific gripper and six-joint model.
+for command, width in (("close", 0.0), ("open", 0.05)):
+    model.begin_gripper(command, 3)
+    model.step(2)
+    assert model.verify()
+    assert abs(model.width - width) < 1e-6
+assert len(model.robot.qs) == 6
 print(json.dumps({"offset_tcp_motion": "PASS", "changed_tcp_rejected": "PASS", "hardware": False}))
