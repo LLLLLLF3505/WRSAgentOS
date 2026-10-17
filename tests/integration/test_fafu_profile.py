@@ -24,7 +24,7 @@ async def test_default_fafu_profile_and_motion():
         report = json.loads(output.decode("utf-8").splitlines()[-1])
         assert report == {
             "result": "PASS",
-            "objects": 8,
+            "objects": 17,
             "active_joints": 6,
             "named_moves": 4,
             "relative_moves": 4,

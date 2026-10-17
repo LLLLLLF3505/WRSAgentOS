@@ -48,13 +48,13 @@ conda activate wrs
 | `wrs_agent/assets/fafu/profile.toml` | 底座位置、home/B/C 关节姿态；角度单位弧度 |
 | `wrs_agent/assets/fafu/` | 项目内 URDF 和 7 个连杆 STL |
 | `wrs_agent/assets/kitchen/scene.toml` | 唯一正式默认厨具配置，位置单位米 |
-| `wrs_agent/assets/kitchen/meshes/` | 7 个已归一化到米的场景网格 |
+| `wrs_agent/assets/kitchen/meshes/` | 10 个已归一化到米的场景网格 |
 | `wrs_agent/schemas.py` | 支持 mesh asset ID 和 alpha 的场景协议 |
 | `design/kitchen/FAFU_kitchen.blend` | 可编辑 Blender 场景；不参与 AgentOS 运行 |
 | `design/kitchen/preview.png` | Blender 场景预览 |
 | `wrs_agent/assets/SOURCES.md` | 模型来源与单位说明 |
 
-`scene.toml` 包含桌面、电磁炉、锅、锅盖、量杯、漏勺、盘子、盘上长方体。量杯 alpha=0.28；机械臂基座 x=-0.125 米；长方体为 100×60×30 毫米。
+`scene.toml` 包含桌面、电磁炉、大锅、大锅盖、量杯、漏勺、盘子、盘上长方体、捞网架、两套碗与支架整体及碗架，以及第二套碗内 4 个淡黄色食物块，共 17 个对象。2026-10-17 的替换与新增资源说明见 [KITCHEN_ASSET_UPDATE.md](KITCHEN_ASSET_UPDATE.md)。量杯 alpha=0.28；机械臂基座 x=-0.125 米；长方体为 100×60×30 毫米。
 
 改变位置请编辑物体 `pos`；改变颜色编辑 `rgb`；改变透明度编辑 `alpha`（0 透明，1 不透明）。STL 的 `asset` 相对 `wrs_agent/assets`，不接受磁盘绝对路径或 `../`。文件已经以米保存，不要再乘 0.001。Blender 文件与 TOML 不会自动双向同步。
 
@@ -80,7 +80,7 @@ conda activate wrs
 .\scripts\run.ps1 -m pytest tests/integration/test_wrs.py tests/integration/test_wrs_examples.py tests/integration/test_wrs_scene.py tests/integration/test_wrs_tcp.py tests/integration/test_fafu_profile.py -q
 ```
 
-此次验证：691 项单元测试通过；11 个不同集成测试通过（节点/客户端/观察器、UR TCP 与夹爪镜像、FAFU 默认配置）。实际 FAFU 8 对象、6 关节、4 次命名运动、4 次相对运动检查通过。未测试真实硬件或物理抓取。
+最初 8 对象版本的历史验证：691 项单元测试通过；11 个不同集成测试通过（节点/客户端/观察器、UR TCP 与夹爪镜像、FAFU 默认配置）。实际 FAFU 8 对象、6 关节、4 次命名运动、4 次相对运动检查通过。未测试真实硬件或物理抓取。
 
 ## 提交到自己的 fork
 

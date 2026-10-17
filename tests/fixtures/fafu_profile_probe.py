@@ -20,6 +20,15 @@ async def main():
             "skimmer",
             "plate",
             "plate_block",
+            "skimmer_holder",
+            "bowl_support",
+            "bowl_rack",
+            "bowl_support_2",
+            "bowl_rack_2",
+            "bowl_food_1",
+            "bowl_food_2",
+            "bowl_food_3",
+            "bowl_food_4",
         }
         assert state.objects["measuring_cup"].alpha == 0.28
         SceneData.model_validate_json(state.snapshot().model_dump_json())

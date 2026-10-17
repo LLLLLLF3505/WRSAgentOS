@@ -1,4 +1,5 @@
-# Default FAFU kitchen, metres. Mesh paths are relative to wrs_agent/assets.
+# Default FAFU kitchen. Positions in metres.
+# Robot faces +X into the table; right is -Y. Two bowl stations in front.
 frame_id = "world"
 
 [objects.table]
@@ -12,7 +13,7 @@ geometry = { kind = "box", xyz_lengths = [1.1, 1, 0.06] }
 [objects.induction_cooker]
 source = "configuration"
 label = "电磁炉"
-pos = [0.5199999809265137, 0.2199999988079071, 0.0]
+pos = [0.02, -0.29, 0.0]
 rotmat = [[1.0, -0.0, 0.0], [0.0, 1.0, -0.0], [0.0, 0.0, 1.0]]
 rgb = [0.78, 0.79, 0.8]
 alpha = 1.0
@@ -20,26 +21,26 @@ geometry = { kind = "mesh", asset = "kitchen/meshes/induction_cooker.stl" }
 
 [objects.pot]
 source = "configuration"
-label = "锅"
-pos = [0.5199999809265137, 0.2199999988079071, 0.04500013589859009]
-rotmat = [[1.0, -0.0, 0.0], [0.0, 1.0, -0.0], [0.0, 0.0, 1.0]]
-rgb = [0.5, 0.55, 0.6]
+label = "大锅"
+pos = [0.02, -0.29, 0.0450001359]
+rotmat = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+rgb = [0.55, 0.59, 0.63]
 alpha = 1.0
-geometry = { kind = "mesh", asset = "kitchen/meshes/pot.stl" }
+geometry = { kind = "mesh", asset = "kitchen/meshes/large_pot.stl" }
 
 [objects.pot_lid]
 source = "configuration"
-label = "锅盖"
-pos = [0.4000000059604645, -0.25, 0.0]
-rotmat = [[1.0, -0.0, 0.0], [0.0, 1.0, -0.0], [0.0, 0.0, 1.0]]
-rgb = [0.57, 0.62, 0.68]
+label = "大锅盖"
+pos = [0.75, -0.35, 0]
+rotmat = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+rgb = [0.55, 0.59, 0.63]
 alpha = 1.0
-geometry = { kind = "mesh", asset = "kitchen/meshes/pot_lid.stl" }
+geometry = { kind = "mesh", asset = "kitchen/meshes/large_pot_lid.stl" }
 
 [objects.measuring_cup]
 source = "configuration"
 label = "量杯"
-pos = [0.6800000071525574, -0.23000000417232513, 0.0]
+pos = [0.69, -0.12, 0]
 rotmat = [[1.0, -0.0, 0.0], [0.0, 1.0, -0.0], [0.0, 0.0, 1.0]]
 rgb = [0.8, 0.81, 0.82]
 alpha = 0.28
@@ -48,8 +49,8 @@ geometry = { kind = "mesh", asset = "kitchen/meshes/measuring_cup.stl" }
 [objects.skimmer]
 source = "configuration"
 label = "漏勺"
-pos = [0.15000000596046448, -0.25999999046325684, 0.0]
-rotmat = [[1.0, -0.0, 0.0], [0.0, 1.0, -0.0], [0.0, 0.0, 1.0]]
+pos = [0.044500000029802325, 0.2900000052899122, 0.20737625290908335]
+rotmat = [[1, 0, 0], [0, 0, 1], [0, -1, 0]]
 rgb = [0.58, 0.63, 0.68]
 alpha = 1.0
 geometry = { kind = "mesh", asset = "kitchen/meshes/skimmer.stl" }
@@ -57,7 +58,7 @@ geometry = { kind = "mesh", asset = "kitchen/meshes/skimmer.stl" }
 [objects.plate]
 source = "configuration"
 label = "盘子"
-pos = [0.22, 0.2, 0]
+pos = [0.65, 0.16, 0]
 rotmat = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
 rgb = [0.84, 0.85, 0.87]
 alpha = 1.0
@@ -66,8 +67,85 @@ geometry = { kind = "mesh", asset = "kitchen/meshes/plate.stl" }
 [objects.plate_block]
 source = "configuration"
 label = "盘上长方体"
-pos = [0.22, 0.2, 0.022000088691711425]
+pos = [0.65, 0.16, 0.022000088691711425]
 rotmat = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
 rgb = [0.92, 0.92, 0.88]
 alpha = 1.0
 geometry = { kind = "mesh", asset = "kitchen/meshes/plate_block.stl" }
+
+[objects.skimmer_holder]
+source = "configuration"
+label = "捞网架"
+pos = [0.05, 0.36, 0]
+rotmat = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+rgb = [0.55, 0.59, 0.63]
+alpha = 1.0
+geometry = { kind = "mesh", asset = "kitchen/meshes/skimmer_holder.stl" }
+
+[objects.bowl_support]
+source = "configuration"
+label = "碗与支架整体"
+pos = [0.36, -0.12, 0.04001000283122063]
+rotmat = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+rgb = [0.55, 0.59, 0.63]
+alpha = 1.0
+geometry = { kind = "mesh", asset = "kitchen/meshes/bowl_support.stl" }
+
+[objects.bowl_rack]
+source = "configuration"
+label = "碗架"
+pos = [0.36, -0.12, 0]
+rotmat = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+rgb = [0.55, 0.59, 0.63]
+alpha = 1.0
+geometry = { kind = "mesh", asset = "kitchen/meshes/bowl_rack.stl" }
+
+[objects.bowl_support_2]
+source = "configuration"
+label = "碗与支架整体（第二套）"
+pos = [0.36, 0.19, 0.04001000283122063]
+rotmat = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+rgb = [0.55, 0.59, 0.63]
+alpha = 1.0
+geometry = { kind = "mesh", asset = "kitchen/meshes/bowl_support.stl" }
+
+[objects.bowl_rack_2]
+source = "configuration"
+label = "碗架（第二套）"
+pos = [0.36, 0.19, 0]
+rotmat = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+rgb = [0.55, 0.59, 0.63]
+alpha = 1.0
+geometry = { kind = "mesh", asset = "kitchen/meshes/bowl_rack.stl" }
+
+[objects.bowl_food_1]
+source = "configuration"
+label = "淡黄色食物块1"
+pos = [0.33999999999999997, 0.176, 0.060036968973875046]
+rotmat = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+rgb = [0.95, 0.82, 0.42]
+geometry = { kind = "box", xyz_lengths = [0.032, 0.018, 0.022] }
+
+[objects.bowl_food_2]
+source = "configuration"
+label = "淡黄色食物块2"
+pos = [0.38, 0.176, 0.06003698387503624]
+rotmat = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+rgb = [0.95, 0.82, 0.42]
+geometry = { kind = "box", xyz_lengths = [0.032, 0.018, 0.022] }
+
+[objects.bowl_food_3]
+source = "configuration"
+label = "淡黄色食物块3"
+pos = [0.33999999999999997, 0.20400000000000001, 0.06003698387503624]
+rotmat = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+rgb = [0.95, 0.82, 0.42]
+geometry = { kind = "box", xyz_lengths = [0.032, 0.018, 0.022] }
+
+[objects.bowl_food_4]
+source = "configuration"
+label = "淡黄色食物块4"
+pos = [0.38, 0.20400000000000001, 0.060036968973875046]
+rotmat = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+rgb = [0.95, 0.82, 0.42]
+geometry = { kind = "box", xyz_lengths = [0.032, 0.018, 0.022] }

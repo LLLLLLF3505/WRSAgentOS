@@ -17,7 +17,7 @@ def test_mesh_asset_rejects_external_paths(asset):
 
 def test_default_kitchen_is_portable_and_bounded():
     objects = load_scene(ROOT / "wrs_agent/assets/kitchen/scene.toml")
-    assert len(objects) == 8
+    assert len(objects) == 17
     for obj in objects.values():
         if obj.geometry.kind == "mesh":
             assert (ROOT / "wrs_agent/assets" / obj.geometry.asset).is_file()
